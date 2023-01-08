@@ -12,7 +12,7 @@
       favicon: 'https://qoomon.github.io/aws-s3-bucket-browser/favicon.ico',
       primaryColor: '#167df0',
 
-      bucketUrl: undefined,
+      bucketUrl: "https://manoebucket1.is3.cloudhost.id",
       // If bucketUrl is undefined, this script tries to determine bucket Rest API URL from this file location itself.
       //   This will only work for locations like these
       //   * https://s3.BUCKET-REGION.amazonaws.com/BUCKET-NAME/index.html
@@ -174,11 +174,28 @@
                 <b-button
                   v-if="props.row.type === 'content' && props.row.name.endsWith('.md')"
                   type="is-text"
-                  tag="a"
-                  :href="`#${pathPrefix + props.row.name}:markdown`"
                   icon-left="image" size="is-medium"
-                  target="_blank"
+                  @click="openModal('`modal-${props.row.name}`')"
                 ></b-button>
+
+                <b-modal
+                  v-if="props.row.type === 'content' && props.row.name.endsWith('.md')"
+                  v-model="`modal-${props.row.name}`"
+                  has-modal-card
+                  trap-focus
+                  close-button-aria-label="Close">
+                  <div class="modal-card" style="width: auto;">
+                    <header class="modal-card-head">
+                      <p class="modal-card-title">{{ props.row.name }}</p>
+                    </header>
+
+                    <section class="modal-card-body">
+                      <zero-md
+                        :src="urlFromPathPrefix(bucketPrefix) + props.row.name">
+                      </zero-md>
+                    </section>
+                  </div>
+                </b-modal>
 
                 <!-- Install Button -->
                 <b-button
@@ -600,6 +617,14 @@
       },
       async beforeDestroy() {
         window.removeEventListener('resize')
+      },
+      openModal(modal) {
+        modal.$buefy.modal.open({
+          parent: modal,
+          hasModalCard: true,
+          customClass: 'custom-class custom-class-2',
+          trapFocus: true
+        })
       }
     })
   </script>
@@ -658,7 +683,7 @@
       display: block;
       flex-basis: 1.5rem;
       flex-grow: 0;
-      flex-shrink: 0;"
+      flex-shrink: 0;
     }
 
     .name-column-buttons {
